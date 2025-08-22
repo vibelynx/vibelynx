@@ -1,18 +1,14 @@
+import { AuthContext } from "@/lib/auth";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { Redirect, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { useContext } from "react";
 
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
-
-const isSignedIn = false
-
-export default function RootLayout() {
+export default function AppLayout() {
   const { isDarkColorScheme } = useColorScheme();
+  const authState = useContext(AuthContext)
 
-  if (!isSignedIn) {
+  if (!authState.isSignedIn) {
     return <Redirect href="/signin" />
   }
 
