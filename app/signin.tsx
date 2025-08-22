@@ -8,7 +8,7 @@ export default function Index() {
 
   return (
     <View className="flex-1 items-center justify-center">
-      <Text className="dark:text-white">{process.env.BETTER_AUTH_URL}</Text>
+      <Text>Sign In Page</Text>
       <Button onPress={authState.signIn}><Text>Sign In</Text></Button>
     </View>
   );
