@@ -3,7 +3,7 @@ import { AuthContext } from "@/lib/auth";
 import { useContext } from "react";
 import { Text, View } from "react-native";
 
-export default function Index() {
+export default function SignIn() {
   const authState = useContext(AuthContext)
 
   return (
