@@ -15,7 +15,14 @@ export default function AppLayout() {
   return (
     <>
       <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
-      <Stack />
+      <Stack>
+        <Stack.Screen
+          name="index"
+          options={{
+            headerShown: false
+          }}
+        />
+      </Stack>
     </>
   )
 }
