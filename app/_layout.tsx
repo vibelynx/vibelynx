@@ -22,14 +22,7 @@ export default function RootLayout() {
     <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
       <AuthProvider>
         <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
-        <Stack>
-          <Stack.Screen
-            name="(app)"
-            options={{
-              headerShown: false
-            }}
-          />
-        </Stack>
+        <Stack screenOptions={{ headerShown: false }} />
       </AuthProvider>
     </ThemeProvider>
   )
