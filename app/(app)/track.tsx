@@ -1,6 +1,6 @@
 import { Text, StyleSheet, View, SafeAreaView } from "react-native"
 import { Image } from 'expo-image'
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, Link } from "expo-router";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
@@ -62,13 +62,13 @@ export default function Track() {
           <Text className="dark:text-white text-lg font-medium">Open In</Text>
           <View className="flex flex-row gap-5">
             {track?.platforms.map((platform: any) => (
-              <View key={platform.key} className="w-20 h-20">
+              <Link href={platform.url} key={platform.key} className="w-20 h-20">
                 <Image
                   style={styles.image}
                   source={`https://vibelynx.app/${platform.key}.svg`}
                   contentFit="cover"
                 />
-              </View>
+              </Link>
             ))}
           </View>
         </View>
