@@ -13,6 +13,7 @@ export default function Index() {
       <Text className="text-xl font-bold">
         Welcome to Nativewind!
       </Text>
+      <Button onPress={() => router.push("/(setup)/permission")}><Text>Track Page</Text></Button>
       <Button onPress={() => router.push(`/(app)/track?id=${"bc0cba17759d905b"}`)}><Text>Track Page</Text></Button>
       <Button onPress={authState.signOut}><Text>Sign Out</Text></Button>
     </View>
