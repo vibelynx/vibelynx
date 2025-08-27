@@ -6,7 +6,7 @@ import { useRouter } from "expo-router"
 
 type AuthState = {
   isSignedIn: boolean
-  signIn: () => void
+  signIn: (platform: string, scopes: string[]) => void
   signOut: () => void
 }
 
@@ -44,15 +44,21 @@ export function AuthProvider({ children }: PropsWithChildren) {
     checkSession()
   }, [])
 
-  const signIn = async () => {
+  const signIn = async (platform: string, scopes: string[]) => {
     await authClient.signIn.social({
-      provider: "spotify",
+      provider: platform,
+      scopes: scopes,
       callbackURL: "vibelynx://",
-      // TODO: newUserCallbackURL: onboarding flow
     })
 
-    setIsSignedIn(true)
-    router.replace("/(app)")
+    const { data } = await authClient.getSession()
+
+    if (!!data?.session.id) {
+      setIsSignedIn(true)
+      router.replace("/(app)")
+    } else {
+      console.log("error")
+    }
   }
   const signOut = async () => {
     await authClient.signOut()
