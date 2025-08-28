@@ -77,8 +77,8 @@ export default function Index() {
           />
           {showSearch ? (
             <ScrollView>
-              {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(() => (
-                <Link href="/(app)/track?id=bc0cba17759d905b">
+              {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((index: number) => (
+                <Link key={index} href="/(app)/track?id=bc0cba17759d905b">
                   <View className="w-20 h-20">
                     <Image style={styles.artwork} source="https://i.scdn.co/image/ab67616d0000b273028e0d1464c08f971df5071b" />
                   </View>
@@ -90,8 +90,8 @@ export default function Index() {
               <View className="gap-2">
                 <Text variant="large">Recently Played</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                  {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(() => (
-                    <Link href="/(app)/track?id=bc0cba17759d905b">
+                  {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((_: any, index: number, array) => (
+                    <Link key={index} className={index + 1 < array.length ? "mr-4" : ""} href="/(app)/track?id=bc0cba17759d905b">
                       <View className="w-20 h-20">
                         <Image style={styles.artwork} source="https://i.scdn.co/image/ab67616d0000b273028e0d1464c08f971df5071b" />
                       </View>
@@ -102,9 +102,9 @@ export default function Index() {
             </>
           )
           }
-        </View >
-      </ScrollView >
-    </SafeAreaView >
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
