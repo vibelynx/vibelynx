@@ -3,35 +3,18 @@ import { Image } from 'expo-image'
 import { useLocalSearchParams, Link } from "expo-router";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { GetTrack, Track } from "@vibelynx/vibelynx-js"
 
-export default function Track() {
+export default function TrackScreen() {
   const { id, url } = useLocalSearchParams<{ id?: string; url?: string }>();
   const [track, setTrack] = useState<any>(null)
 
-  const fetchTrackData = async (): Promise<any | null> => {
-    let response: Response
-
-    if (id !== undefined) {
-      response = await fetch(`https://api.vibelynx.app/v1/tracks/${id}`)
-    } else if (url !== undefined) {
-      response = await fetch(`https://api.vibelynx.app/v1/tracks?urls=${url}`)
-    } else {
-      return null
-    }
-
-    if (!response.ok) {
-      return null // TODO: better error handling
-    }
-
-    const data = await response.json()
-    const t = url !== undefined ? data[0] : data
-
-    setTrack(t)
-  }
-
   useEffect(() => {
-    fetchTrackData()
-  }, [])
+    if (id) {
+      GetTrack(id)
+        .then((data: { track: Track, error: Error | null }) => setTrack(data.track))
+    }
+  }, [id])
 
   return (
     <SafeAreaView>
