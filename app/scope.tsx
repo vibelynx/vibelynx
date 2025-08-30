@@ -122,9 +122,7 @@ export default function Scope() {
   const [selectedScopes, setSelectedScopes] = useState<Set<string>>(new Set())
   const authState = useContext(AuthContext)
 
-  if (authState.isSignedIn) {
-    return <Redirect href="/(app)" />
-  }
+
 
   const toggleScope = (scopeValue: string) => {
     const newSelectedScopes = new Set(selectedScopes);
@@ -146,6 +144,10 @@ export default function Scope() {
     );
     setSelectedScopes(new Set(allScopeValues));
   }, [])
+
+  if (authState.isSignedIn) {
+    return <Redirect href="/(app)" />
+  }
 
   return (
     <SafeAreaView className="relative h-screen">
