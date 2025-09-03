@@ -61,6 +61,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
     if (data?.session?.id) {
       setSession(data.session)
       setUser(data.user)
+
+      await authClient.getAccessToken({
+        providerId: "spotify"
+      })
+
       return data.session
     }
 
