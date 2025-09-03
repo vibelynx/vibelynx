@@ -1,33 +1,27 @@
-import { XIcon } from 'lucide-react-native';
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text"
-import { authClient } from "@/lib/auth";
 import { Image } from "expo-image";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { SafeAreaView, View, StyleSheet, ScrollView, TextInput, Pressable } from "react-native";
-import { useColorScheme } from "@/lib/useColorScheme";
+import { SafeAreaView, View, StyleSheet, ScrollView, TextInput, FlatList, TouchableOpacity } from "react-native";
+import { GetUserHistory, History } from "@vibelynx/vibelynx-js"
+import { useAuth } from "@/lib/auth";
 
 export default function Index() {
-  const { isDarkColorScheme } = useColorScheme();
   const [showSearch, setShowSearch] = useState<boolean>(false)
   const searchRef = useRef<TextInput>(null);
   const showSearchRef = useRef(false);
-  const [accessToken, setAccessToken] = useState<string | undefined>(undefined)
-
-  const getAccessToken = async () => {
-    const { data } = await authClient.getAccessToken({
-      providerId: "spotify",
-    })
-
-    setAccessToken(data?.accessToken)
-  }
+  const { session, user } = useAuth()
+  const [history, setHistory] = useState<History[] | null>(null)
 
   useEffect(() => {
-    getAccessToken()
-
-    console.log(accessToken)
+    if (session && user) {
+      GetUserHistory(user.id, session?.token)
+        .then((data: { history: History[], error: Error | null }) => setHistory(data.history))
+    }
   }, [])
+
+  console.log(history)
 
   return (
     <SafeAreaView>
@@ -86,20 +80,28 @@ export default function Index() {
               ))}
             </ScrollView>
           ) : (
-            <>
-              <View className="gap-2">
-                <Text variant="large">Recently Played</Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                  {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((_: any, index: number, array) => (
-                    <Link key={index} className={index + 1 < array.length ? "mr-4" : ""} href="/(app)/track?id=bc0cba17759d905b">
-                      <View className="w-20 h-20">
-                        <Image style={styles.artwork} source="https://i.scdn.co/image/ab67616d0000b273028e0d1464c08f971df5071b" />
-                      </View>
-                    </Link>
-                  ))}
-                </ScrollView>
-              </View>
-            </>
+            <View className="gap-2">
+              <Text variant="large">Recently Played</Text>
+              <FlatList
+                className="gap-4"
+                horizontal
+                data={history ?? []}
+                renderItem={({ item, index }) => (
+                  <TouchableOpacity
+                    key={item.id}
+                    onPress={() => router.push(`/(app)/track?id=${item.id}`)}
+                    className={`flex-1 gap-2 max-w-40 ${history && index < history.length - 1 ? "mr-4" : ""}`}
+                  >
+                    <View className="w-40 h-40">
+                      <Image style={styles.artwork} source={item.artwork} />
+                    </View>
+                    <Text numberOfLines={1} variant="small">
+                      {item.type} - {item.title}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              />
+            </View>
           )
           }
         </View>
