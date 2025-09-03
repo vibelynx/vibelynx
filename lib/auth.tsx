@@ -7,10 +7,10 @@ import { Session, User } from "better-auth/types";
 
 type AuthState = {
   // TODO: loading state
-  getSession: () => void
+  getSession: () => Promise<Session | null>
   session: Session | null
-  signIn: (platform: string, scopes: string[]) => void
-  signOut: () => void
+  signIn: (platform: string, scopes: string[]) => Promise<void>
+  signOut: () => Promise<void>
   user: User | null
 }
 
@@ -41,12 +41,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     const checkSession = async () => {
       const data = await getSession()
-
       if (data) {
         router.replace("/(app)")
       }
     }
-
     checkSession()
   }, [])
 
@@ -59,7 +57,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     const { data, error } = await authClient.getSession()
 
     if (error) {
-      console.error('Failed to get session:', error)
+      console.error('Failed to get session:', error.message)
       return null
     }
 
@@ -82,16 +80,16 @@ export function AuthProvider({ children }: PropsWithChildren) {
     const { data, error } = await authClient.getSession()
 
     if (error) {
-      throw new Error(`Sign in failed: ${error.message}`)
+      throw new Error(`Authentication failed: ${error.message}`)
     }
 
-    if (data?.session.id) {
-      setSession(data.session)
-      setUser(data.user)
-      router.replace("/(app)")
-    } else {
-      throw new Error('No session returned after sign in')
+    if (!data?.session?.id) {
+      throw new Error('Authentication succeeded but no session was created')
     }
+
+    setSession(data.session)
+    setUser(data.user)
+    router.replace("/(app)")
   }
   const signOut = async () => {
     await authClient.signOut()
