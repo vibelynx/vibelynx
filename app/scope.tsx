@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
 import { AuthContext } from "@/lib/auth";
-import { useLocalSearchParams, Redirect } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useContext, useEffect, useState } from "react";
 import { SafeAreaView, ScrollView, View } from "react-native";
 
@@ -122,8 +122,6 @@ export default function Scope() {
   const [selectedScopes, setSelectedScopes] = useState<Set<string>>(new Set())
   const authState = useContext(AuthContext)
 
-
-
   const toggleScope = (scopeValue: string) => {
     const newSelectedScopes = new Set(selectedScopes);
     if (newSelectedScopes.has(scopeValue)) {
@@ -144,10 +142,6 @@ export default function Scope() {
     );
     setSelectedScopes(new Set(allScopeValues));
   }, [])
-
-  if (authState.isSignedIn) {
-    return <Redirect href="/(app)" />
-  }
 
   return (
     <SafeAreaView className="relative h-screen">

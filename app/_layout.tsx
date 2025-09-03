@@ -1,10 +1,11 @@
 import "../global.css"
 import { DarkTheme, DefaultTheme, Theme, ThemeProvider } from "@react-navigation/native";
-import { Stack } from "expo-router";
+import { Redirect, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { NAV_THEME } from "@/lib/constants";
 import { useColorScheme } from "@/lib/useColorScheme";
-import { AuthProvider } from "@/lib/auth";
+import { AuthContext, AuthProvider } from "@/lib/auth";
+import { useContext } from "react";
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -17,6 +18,11 @@ const DARK_THEME: Theme = {
 
 export default function RootLayout() {
   const { isDarkColorScheme } = useColorScheme();
+  const authState = useContext(AuthContext)
+
+  if (authState.session) {
+    return <Redirect href="/(app)" />
+  }
 
   return (
     <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>

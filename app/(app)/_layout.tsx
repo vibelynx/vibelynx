@@ -8,7 +8,7 @@ export default function AppLayout() {
   const { isDarkColorScheme } = useColorScheme();
   const authState = useContext(AuthContext)
 
-  if (!authState.isSignedIn) {
+  if (!authState.session) {
     return <Redirect href="/signin" />
   }
 

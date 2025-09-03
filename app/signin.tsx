@@ -1,16 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text"
-import { Link, Redirect } from "expo-router";
+import { Link } from "expo-router";
 import { View } from "react-native";
-import { useContext } from "react";
-import { AuthContext } from "@/lib/auth";
 
 export default function SignIn() {
-  const authState = useContext(AuthContext);
-
-  if (authState.isSignedIn) {
-    return <Redirect href="/(app)" />
-  }
 
   return (
     <View className="h-screen mx-10">

@@ -3,11 +3,15 @@ import { expoClient } from "@better-auth/expo/client"
 import * as SecureStore from "expo-secure-store"
 import { createContext, PropsWithChildren, useEffect, useState } from "react"
 import { useRouter } from "expo-router"
+import { Session, User } from "better-auth/types";
 
 type AuthState = {
-  isSignedIn: boolean
+  // TODO: loading state
+  getSession: () => void
+  session: Session | null
   signIn: (platform: string, scopes: string[]) => void
   signOut: () => void
+  user: User | null
 }
 
 export const authClient = createAuthClient({
@@ -22,27 +26,51 @@ export const authClient = createAuthClient({
 })
 
 export const AuthContext = createContext<AuthState>({
-  isSignedIn: false,
-  signIn: () => { },
-  signOut: () => { }
+  getSession: () => Promise.resolve(null),
+  session: null,
+  signIn: () => Promise.resolve(),
+  signOut: () => Promise.resolve(),
+  user: null
 })
 
 export function AuthProvider({ children }: PropsWithChildren) {
-  const [isSignedIn, setIsSignedIn] = useState<boolean>(false)
+  const [session, setSession] = useState<Session | null>(null)
+  const [user, setUser] = useState<User | null>(null)
   const router = useRouter()
 
-  const checkSession = async () => {
-    const { data } = await authClient.getSession()
-
-    if (!!data?.session.id) {
-      setIsSignedIn(true)
-      router.replace("/(app)")
-    }
-  }
-
   useEffect(() => {
+    const checkSession = async () => {
+      const data = await getSession()
+
+      if (data) {
+        router.replace("/(app)")
+      }
+    }
+
     checkSession()
   }, [])
+
+  const getSession = async (): Promise<Session | null> => {
+    // Return cached session if still valid
+    if (session != null && session.expiresAt > new Date()) {
+      return session
+    }
+
+    const { data, error } = await authClient.getSession()
+
+    if (error) {
+      console.error('Failed to get session:', error)
+      return null
+    }
+
+    if (data?.session?.id) {
+      setSession(data.session)
+      setUser(data.user)
+      return data.session
+    }
+
+    return null
+  }
 
   const signIn = async (platform: string, scopes: string[]) => {
     await authClient.signIn.social({
@@ -51,23 +79,29 @@ export function AuthProvider({ children }: PropsWithChildren) {
       callbackURL: "vibelynx://",
     })
 
-    const { data } = await authClient.getSession()
+    const { data, error } = await authClient.getSession()
 
-    if (!!data?.session.id) {
-      setIsSignedIn(true)
+    if (error) {
+      throw new Error(`Sign in failed: ${error.message}`)
+    }
+
+    if (data?.session.id) {
+      setSession(data.session)
+      setUser(data.user)
       router.replace("/(app)")
     } else {
-      console.log("error")
+      throw new Error('No session returned after sign in')
     }
   }
   const signOut = async () => {
     await authClient.signOut()
-    setIsSignedIn(false)
+    setSession(null)
+    setUser(null)
     router.replace("/signin")
   }
 
   return (
-    <AuthContext value={{ isSignedIn, signIn, signOut }}>
+    <AuthContext value={{ getSession, session, signIn, signOut, user }}>
       {children}
     </AuthContext>
   )
