@@ -1,9 +1,16 @@
 import { createAuthClient } from "better-auth/react"
 import { expoClient } from "@better-auth/expo/client"
 import * as SecureStore from "expo-secure-store"
-import { createContext, PropsWithChildren, useCallback, useEffect, useState } from "react"
 import { useRouter } from "expo-router"
 import { Session, User } from "better-auth/types";
+import {
+  createContext,
+  PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useState
+} from "react"
 
 type AuthState = {
   // TODO: loading state
@@ -103,4 +110,12 @@ export function AuthProvider({ children }: PropsWithChildren) {
       {children}
     </AuthContext>
   )
+}
+
+export const useAuth = () => {
+  const context = useContext(AuthContext)
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider')
+  }
+  return context
 }

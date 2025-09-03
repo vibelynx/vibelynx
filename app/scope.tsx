@@ -2,9 +2,9 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
-import { AuthContext } from "@/lib/auth";
+import { useAuth } from "@/lib/auth";
 import { useLocalSearchParams } from "expo-router";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { SafeAreaView, ScrollView, View } from "react-native";
 
 type Scopes = {
@@ -120,7 +120,7 @@ const scopes: Scopes[] = [
 export default function Scope() {
   const { platform } = useLocalSearchParams<{ platform: string }>()
   const [selectedScopes, setSelectedScopes] = useState<Set<string>>(new Set())
-  const authState = useContext(AuthContext)
+  const { signIn } = useAuth()
 
   const toggleScope = (scopeValue: string) => {
     const newSelectedScopes = new Set(selectedScopes);
@@ -204,7 +204,7 @@ export default function Scope() {
       </ScrollView>
       <Button
         className="absolute bottom-12 w-full"
-        onPress={() => authState.signIn(platform, Array.from(selectedScopes))}
+        onPress={() => signIn(platform, Array.from(selectedScopes))}
       >
         <Text>Connect</Text>
       </Button>

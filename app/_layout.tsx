@@ -4,8 +4,7 @@ import { Redirect, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { NAV_THEME } from "@/lib/constants";
 import { useColorScheme } from "@/lib/useColorScheme";
-import { AuthContext, AuthProvider } from "@/lib/auth";
-import { useContext } from "react";
+import { AuthProvider, useAuth } from "@/lib/auth";
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -18,9 +17,9 @@ const DARK_THEME: Theme = {
 
 export default function RootLayout() {
   const { isDarkColorScheme } = useColorScheme();
-  const authState = useContext(AuthContext)
+  const { session } = useAuth()
 
-  if (authState.session) {
+  if (session) {
     return <Redirect href="/(app)" />
   }
 
