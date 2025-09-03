@@ -1,7 +1,7 @@
 import { createAuthClient } from "better-auth/react"
 import { expoClient } from "@better-auth/expo/client"
 import * as SecureStore from "expo-secure-store"
-import { createContext, PropsWithChildren, useEffect, useState } from "react"
+import { createContext, PropsWithChildren, useCallback, useEffect, useState } from "react"
 import { useRouter } from "expo-router"
 import { Session, User } from "better-auth/types";
 
@@ -38,17 +38,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<User | null>(null)
   const router = useRouter()
 
-  useEffect(() => {
-    const checkSession = async () => {
-      const data = await getSession()
-      if (data) {
-        router.replace("/(app)")
-      }
-    }
-    checkSession()
-  }, [])
-
-  const getSession = async (): Promise<Session | null> => {
+  const getSession = useCallback(async (): Promise<Session | null> => {
     // Return cached session if still valid
     if (session != null && session.expiresAt > new Date()) {
       return session
@@ -68,7 +58,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }
 
     return null
-  }
+  }, [session])
 
   const signIn = async (platform: string, scopes: string[]) => {
     await authClient.signIn.social({
@@ -97,6 +87,16 @@ export function AuthProvider({ children }: PropsWithChildren) {
     setUser(null)
     router.replace("/signin")
   }
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const data = await getSession()
+      if (data) {
+        router.replace("/(app)")
+      }
+    }
+    checkSession()
+  }, [getSession, router])
 
   return (
     <AuthContext value={{ getSession, session, signIn, signOut, user }}>
