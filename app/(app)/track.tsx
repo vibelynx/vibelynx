@@ -3,7 +3,7 @@ import { Image } from 'expo-image'
 import { useLocalSearchParams, Link } from "expo-router";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { GetTrack, Track } from "@vibelynx/vibelynx-js"
+import { GetTrack, GetTracksByURL, Track } from "@vibelynx/vibelynx-js"
 
 export default function TrackScreen() {
   const { id, url } = useLocalSearchParams<{ id?: string; url?: string }>();
@@ -13,6 +13,15 @@ export default function TrackScreen() {
     if (id) {
       GetTrack(id)
         .then((data: { track: Track, error: Error | null }) => setTrack(data.track))
+    }
+
+    if (url) {
+      GetTracksByURL([url])
+        .then((data: { tracks: Track[] | null, error: Error | null }) => {
+          if (data.tracks) {
+            setTrack(data.tracks[0])
+          }
+        })
     }
   }, [id])
 
@@ -32,7 +41,7 @@ export default function TrackScreen() {
               {track?.title}
             </Text>
             <View className="flex flex-row gap-2 w-fit mx-auto">
-              {track?.artists.map((artist: any) => (
+              {track?.artists?.map((artist: any) => (
                 <Text key={artist.id} className="dark:text-white text-lg font-medium text-center">
                   {artist.name}
                 </Text>
@@ -44,7 +53,7 @@ export default function TrackScreen() {
         <View className="gap-5">
           <Text className="dark:text-white text-lg font-medium">Open In</Text>
           <View className="flex flex-row gap-5">
-            {track?.platforms.map((platform: any) => (
+            {track?.platforms?.map((platform: any) => (
               <Link href={platform.url} key={platform.key} className="w-20 h-20">
                 <Image
                   style={styles.image}
